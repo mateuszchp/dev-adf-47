@@ -1,0 +1,9 @@
+{
+	"name": "PL_extract_from_sqldb",
+	"properties": {
+		"folder": {
+			"name": "_FRAMEWORK"
+		},
+		"annotations": []
+	}
+}
