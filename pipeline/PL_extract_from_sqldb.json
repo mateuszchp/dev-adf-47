@@ -51,7 +51,11 @@
 				"outputs": [
 					{
 						"referenceName": "ds_generic_adls_text_file",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"p_foldername": "customer",
+							"p_filename": "customer.csv"
+						}
 					}
 				]
 			}
