@@ -9,7 +9,7 @@
 			"encrypt": "mandatory",
 			"trustServerCertificate": false,
 			"authenticationType": "ServicePrincipal",
-			"servicePrincipalId": "e991ac46-a373-4008-ac92-f42bf350b4ed",
+			"servicePrincipalId": "88c95259-7e7b-4f70-a2e4-d0d0a826e744",
 			"servicePrincipalCredential": {
 				"type": "AzureKeyVaultSecret",
 				"store": {
