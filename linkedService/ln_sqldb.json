@@ -8,7 +8,17 @@
 			"database": "dev-db",
 			"encrypt": "mandatory",
 			"trustServerCertificate": false,
-			"authenticationType": "SystemAssignedManagedIdentity"
+			"authenticationType": "ServicePrincipal",
+			"servicePrincipalId": "e991ac46-a373-4008-ac92-f42bf350b4ed",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ln_dev_akv_47",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "dev-etl-sp-secret"
+			},
+			"tenant": "de5bd167-c2de-4467-adbe-5c907f146c74"
 		}
 	}
 }
