@@ -1,0 +1,21 @@
+{
+	"name": "ln_devaccount47",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://devaccount47.dfs.core.windows.net/",
+			"tenant": "de5bd167-c2de-4467-adbe-5c907f146c74",
+			"servicePrincipalId": "88c95259-7e7b-4f70-a2e4-d0d0a826e744",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ln_dev_akv_47",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "dev-etl-sp-secret"
+			}
+		}
+	}
+}
