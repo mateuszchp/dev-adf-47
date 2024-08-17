@@ -5,6 +5,14 @@
 			"referenceName": "ln_devaccount47",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"p_foldername": {
+				"type": "string"
+			},
+			"p_filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
@@ -15,7 +23,7 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
 		"schema": []
