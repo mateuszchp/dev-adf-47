@@ -1,0 +1,10 @@
+{
+	"name": "ln_dev_akv_47",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://dev-akv-47.vault.azure.net/"
+		}
+	}
+}
