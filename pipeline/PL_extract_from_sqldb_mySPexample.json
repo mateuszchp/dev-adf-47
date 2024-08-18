@@ -1,5 +1,5 @@
 {
-	"name": "PL_extract_from_sqldb_copy2",
+	"name": "PL_extract_from_sqldb_mySPexample",
 	"properties": {
 		"activities": [
 			{
@@ -109,7 +109,7 @@
 						"referenceName": "ds_generic_azure_sqldb",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			}
 		],
