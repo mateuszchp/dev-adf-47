@@ -90,7 +90,8 @@
 					"dataset": {
 						"referenceName": "ds_generic_azure_sqldb",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
