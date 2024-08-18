@@ -236,7 +236,7 @@
 							"type": "String"
 						},
 						"status_description": {
-							"value": "Started running: PL_extract_from_sqldb",
+							"value": "Succeeded running: PL_extract_from_sqldb",
 							"type": "String"
 						},
 						"task": {
@@ -303,7 +303,7 @@
 							"type": "String"
 						},
 						"status_description": {
-							"value": "Started running: PL_extract_from_sqldb",
+							"value": "Failed running: PL_extract_from_sqldb",
 							"type": "String"
 						},
 						"task": {
