@@ -68,7 +68,7 @@
 								"type": "Expression"
 							},
 							"p_filename": {
-								"value": "@activity('get_task_parameters').output.firstRow.tgt_file",
+								"value": "@activity('get_task_parameters').output.firstRow.tgt_filename",
 								"type": "Expression"
 							}
 						}
