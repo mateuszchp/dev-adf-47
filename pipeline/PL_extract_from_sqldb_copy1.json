@@ -1,0 +1,102 @@
+{
+	"name": "PL_extract_from_sqldb_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "extract_from_sqldb",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "lookup_test_multiple_records",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT * FROM SalesLT.Customer",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_generic_azure_sqldb",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_generic_adls_text_file",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_foldername": "customer",
+							"p_filename": "customer.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "lookup_test_multiple_records",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT jtp.job, jtp.task, jtp.task_sequence, jtp.parameter, jtp.value\nFROM\n\tconfig.job_task_parameters jtp\n\tJOIN\n\tconfig.task_parameters tp\n\tON\n\t\tjtp.task = tp.task\n\t\tAND jtp.parameter = tp.parameter\n\t\tAND jtp.active = 'Y'\n\t\tAND tp.active = 'Y'\n\t\tAND tp.parameter_type = 'static'\nWHERE jtp.job = 'load_customer'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_azure_sqldb",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "_FRAMEWORK"
+		},
+		"annotations": []
+	}
+}
