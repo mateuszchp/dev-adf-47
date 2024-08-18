@@ -83,7 +83,25 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "EXEC config.get_task_properties 'load_customer', 'PL_extract_from_sqldb'",
+						"sqlReaderStoredProcedureName": "[config].[get_task_properties]",
+						"storedProcedureParameters": {
+							"active_only": {
+								"type": "String",
+								"value": "Y"
+							},
+							"job": {
+								"type": "String",
+								"value": "load_customer"
+							},
+							"task": {
+								"type": "String",
+								"value": "PL_extract_from_sqldb"
+							},
+							"task_sequence": {
+								"type": "Int32",
+								"value": null
+							}
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
