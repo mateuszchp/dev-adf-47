@@ -1,9 +1,9 @@
 {
-	"name": "pipeline1",
+	"name": "PL_test_copy_to_staging",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "copy_without_mapping",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
