@@ -28,15 +28,10 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "TRUNCATE TABLE SalesLT.Customer_Stg",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": true,
-							"keys": [
-								"CustomerID"
-							]
-						},
+						"preCopyScript": "TRUNCATE TABLE SalesLT.Customer_Stg2",
+						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
 						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
@@ -65,7 +60,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"p_schema": "SalesLT",
-							"p_table": "Customer_Stg"
+							"p_table": "Customer_Stg2"
 						}
 					}
 				]
