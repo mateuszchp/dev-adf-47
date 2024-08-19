@@ -169,11 +169,17 @@
 							"type": "String"
 						},
 						"status_description": {
-							"value": "Started running: PL_extract_from_sqldb",
+							"value": {
+								"value": "@concat('Started running: ', pipeline().Pipeline)",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"task": {
-							"value": "PL_extract_from_sqldb",
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"task_id": {
@@ -184,7 +190,7 @@
 							"type": "String"
 						},
 						"task_sequence": {
-							"value": "1",
+							"value": "2",
 							"type": "Int32"
 						},
 						"task_status": {
@@ -236,11 +242,17 @@
 							"type": "String"
 						},
 						"status_description": {
-							"value": "Succeeded running: PL_extract_from_sqldb",
+							"value": {
+								"value": "@concat('Succeeded running: ', pipeline().Pipeline)",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"task": {
-							"value": "PL_extract_from_sqldb",
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"task_id": {
@@ -251,7 +263,7 @@
 							"type": "String"
 						},
 						"task_sequence": {
-							"value": "1",
+							"value": "2",
 							"type": "Int32"
 						},
 						"task_status": {
@@ -303,11 +315,17 @@
 							"type": "String"
 						},
 						"status_description": {
-							"value": "Failed running: PL_extract_from_sqldb",
+							"value": {
+								"value": "@concat('Failed running: ', pipeline().Pipeline)",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"task": {
-							"value": "PL_extract_from_sqldb",
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"task_id": {
@@ -318,7 +336,7 @@
 							"type": "String"
 						},
 						"task_sequence": {
-							"value": "1",
+							"value": "2",
 							"type": "Int32"
 						},
 						"task_status": {
