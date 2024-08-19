@@ -126,7 +126,7 @@
 							},
 							"task_sequence": {
 								"type": "Int32",
-								"value": "1"
+								"value": "2"
 							}
 						},
 						"queryTimeout": "02:00:00",
