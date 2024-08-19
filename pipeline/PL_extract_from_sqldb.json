@@ -25,7 +25,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@activity('get_task_parameters').output.firstRow.src_sql",
+							"value": "@concat(activity('get_task_parameters').output.firstRow.src_sql, ' WHERE ModifiedDate > ''',activity('get_last_run_date').output.firstRow.last_run_date, '''')",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
