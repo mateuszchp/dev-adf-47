@@ -3,79 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "extract_from_sqldb",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "get_task_parameters",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": {
-							"value": "@concat(activity('get_task_parameters').output.firstRow.src_sql, ' WHERE ModifiedDate > ''',activity('get_last_run_date').output.firstRow.last_run_date, '''')",
-							"type": "Expression"
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "ds_generic_azure_sqldb",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_generic_adls_text_file",
-						"type": "DatasetReference",
-						"parameters": {
-							"p_foldername": {
-								"value": "@activity('get_task_parameters').output.firstRow.tgt_folder",
-								"type": "Expression"
-							},
-							"p_filename": {
-								"value": "@activity('get_task_parameters').output.firstRow.tgt_filename",
-								"type": "Expression"
-							}
-						}
-					}
-				]
-			},
-			{
 				"name": "get_task_parameters",
 				"type": "Lookup",
 				"dependsOn": [
@@ -416,7 +343,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "extract_from_sqldb",
+						"activity": "load_staging_table",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -477,7 +404,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "extract_from_sqldb",
+						"activity": "load_staging_table",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -524,6 +451,49 @@
 						},
 						"task_status": {
 							"value": "FAILURE",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ln_sqldb",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "load_staging_table",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "get_task_parameters",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[SalesLT].[sp_load_stg]",
+					"storedProcedureParameters": {
+						"filepath": {
+							"value": {
+								"value": "@activity('get_task_parameters').output.firstRow.src_path",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"stgtablename": {
+							"value": {
+								"value": "@activity('get_task_parameters').output.firstRow.tgt_stg_table",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
