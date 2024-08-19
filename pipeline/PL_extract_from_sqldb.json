@@ -80,7 +80,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "update_control_table",
+						"activity": "get_last_run_date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -513,6 +513,51 @@
 				"linkedServiceName": {
 					"referenceName": "ln_sqldb",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "get_last_run_date",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "update_control_table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[control].[sp_get_last_run_date]",
+						"storedProcedureParameters": {
+							"job": {
+								"type": "String",
+								"value": "load_customer"
+							},
+							"task": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_azure_sqldb",
+						"type": "DatasetReference"
+					}
 				}
 			}
 		],
