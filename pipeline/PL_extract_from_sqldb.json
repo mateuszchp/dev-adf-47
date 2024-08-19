@@ -588,7 +588,7 @@
 						},
 						"last_run_date": {
 							"value": {
-								"value": "@activity('get_last_run_date').output.firstRow.last_run_date",
+								"value": "@pipeline().TriggerTime",
 								"type": "Expression"
 							},
 							"type": "DateTime"
