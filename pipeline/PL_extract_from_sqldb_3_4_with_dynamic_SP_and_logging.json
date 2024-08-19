@@ -1,6 +1,7 @@
 {
 	"name": "PL_extract_from_sqldb_3_4_with_dynamic_SP_and_logging",
 	"properties": {
+		"description": "Now a dynamic Stored Procedures picks proper params per job and task in a good format.\nAlso simple logging is being added. Note that job_id and task_id are the same for now - that is because job_id should be a parent pipeline id which ochestrates several tasks as a one job.",
 		"activities": [
 			{
 				"name": "extract_from_sqldb",
