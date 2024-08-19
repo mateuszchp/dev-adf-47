@@ -203,7 +203,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "update_control_table_success",
+						"activity": "update_last_run_date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -558,6 +558,53 @@
 						"referenceName": "ds_generic_azure_sqldb",
 						"type": "DatasetReference"
 					}
+				}
+			},
+			{
+				"name": "update_last_run_date",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "update_control_table_success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_update_last_run_date]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"last_run_date": {
+							"value": {
+								"value": "@activity('get_last_run_date').output.firstRow.last_run_date",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"task": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ln_sqldb",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
