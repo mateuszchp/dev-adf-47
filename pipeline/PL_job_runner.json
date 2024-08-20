@@ -160,7 +160,26 @@
 						"value": "@activity('get_tasks').output.value",
 						"type": "Expression"
 					},
-					"isSequential": true
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "set_task_log",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_task_log",
+								"value": {
+									"value": "@item().task",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
