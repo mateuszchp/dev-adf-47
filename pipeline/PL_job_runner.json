@@ -61,6 +61,38 @@
 					"referenceName": "ln_sqldb",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "get_env_parameters",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "initialize_tasks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT * FROM\n(\n\tSELECT parameter, value\n\tFROM config.environment\n) AS base\nPIVOT\n(\n\tMAX(value) FOR parameter IN (subscription, rg, adf)\n) AS pivoted",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_azure_sqldb",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"parameters": {
