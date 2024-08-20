@@ -28,7 +28,7 @@
 				}
 			},
 			{
-				"name": "check_status",
+				"name": "await_task_completion",
 				"type": "Until",
 				"dependsOn": [
 					{
