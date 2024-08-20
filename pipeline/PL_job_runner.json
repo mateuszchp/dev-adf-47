@@ -93,6 +93,54 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "get_tasks",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "get_env_parameters",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[control].[sp_get_tasks]",
+						"storedProcedureParameters": {
+							"job": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.p_job",
+									"type": "Expression"
+								}
+							},
+							"job_id": {
+								"type": "String",
+								"value": {
+									"value": "@variables('v_job_id')",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_azure_sqldb",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"parameters": {
