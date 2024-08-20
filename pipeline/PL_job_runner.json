@@ -461,7 +461,10 @@
 							"type": "String"
 						},
 						"status": {
-							"value": "ERROR",
+							"value": {
+								"value": "@variables('v_task_status')",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
