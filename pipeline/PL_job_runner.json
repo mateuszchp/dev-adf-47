@@ -349,6 +349,69 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "check_task_status",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "set_run_id",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL_check_task_status",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"p_run_id": {
+										"value": "@variables('v_run_id')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "task_successful",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": []
+						},
+						{
+							"name": "task_failed",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": []
 						}
 					]
 				}
