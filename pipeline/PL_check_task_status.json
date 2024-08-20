@@ -72,6 +72,47 @@
 									"resource": "https://management.azure.com/"
 								}
 							}
+						},
+						{
+							"name": "set_task_status",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_task_status",
+								"value": {
+									"value": "@activity('check_task_status').output.status",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "task_failed",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Check status failed.",
+								"errorCode": "50005"
+							}
 						}
 					],
 					"timeout": "0.12:00:00"
