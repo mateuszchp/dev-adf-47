@@ -423,6 +423,53 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "job_failed",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "for_each_task",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_job_status_error]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": {
+								"value": "@pipeline().parameters.p_job",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@variables('v_job_id')",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"status": {
+							"value": "ERROR",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ln_sqldb",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
