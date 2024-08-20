@@ -547,7 +547,7 @@
 							"type": "String"
 						},
 						"task_status": {
-							"value": "FAILURE",
+							"value": "ERROR",
 							"type": "String"
 						}
 					}
