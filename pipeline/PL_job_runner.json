@@ -1,6 +1,84 @@
 {
 	"name": "PL_job_runner",
 	"properties": {
+		"activities": [
+			{
+				"name": "set_job_id",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_job_id",
+					"value": {
+						"value": "@pipeline().RunId",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "initialize_tasks",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "set_job_id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_init_job_control]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": {
+								"value": "@pipeline().parameters.p_job",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@variables('v_job_id')",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ln_sqldb",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"p_job": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"v_job_id": {
+				"type": "String"
+			},
+			"v_task_log": {
+				"type": "String"
+			},
+			"v_task_status": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "_FRAMEWORK"
 		},
