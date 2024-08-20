@@ -394,7 +394,11 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_task_status",
+								"value": "SUCCESS"
+							}
 						},
 						{
 							"name": "task_failed",
@@ -411,7 +415,11 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_task_status",
+								"value": "ERROR"
+							}
 						}
 					]
 				}
