@@ -290,6 +290,47 @@
 								"referenceName": "ln_sqldb",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "run_task",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "check_prior_task_status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": []
+						},
+						{
+							"name": "set_run_id",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "run_task",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_run_id",
+								"value": "333"
+							}
 						}
 					]
 				}
