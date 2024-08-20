@@ -1,0 +1,10 @@
+{
+	"name": "ls_adls_devaccount47",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://devaccount47.dfs.core.windows.net/"
+		}
+	}
+}
