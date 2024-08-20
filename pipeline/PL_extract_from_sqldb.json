@@ -101,12 +101,15 @@
 						"storedProcedureParameters": {
 							"job": {
 								"type": "String",
-								"value": "load_customer"
+								"value": {
+									"value": "@pipeline().parameters.p_job",
+									"type": "Expression"
+								}
 							},
 							"job_id": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().RunId",
+									"value": "@pipeline().parameters.p_job_id",
 									"type": "Expression"
 								}
 							},
@@ -126,7 +129,10 @@
 							},
 							"task_sequence": {
 								"type": "Int32",
-								"value": "1"
+								"value": {
+									"value": "@pipeline().parameters.p_task_sequence",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
@@ -380,14 +386,14 @@
 					"storedProcedureParameters": {
 						"job": {
 							"value": {
-								"value": "@pipeline()?.TriggeredByPipelineName",
+								"value": "@pipeline().parameters.p_job",
 								"type": "Expression"
 							},
 							"type": "String"
 						},
 						"job_id": {
 							"value": {
-								"value": "@pipeline()?.TriggeredByPipelineRunId",
+								"value": "@pipeline().parameters.p_job_id",
 								"type": "Expression"
 							},
 							"type": "String"
