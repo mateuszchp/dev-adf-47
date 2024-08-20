@@ -309,7 +309,17 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"method": "POST",
+								"url": {
+									"value": "@concat(\n    'https://management.azure.com/subscriptions/',\n    activity('get_env_parameters').output.firstRow.subscription,\n    '/resourceGroups/', \n    activity('get_env_parameters').output.firstRow.rg,\n    '/providers/Microsoft.DataFactory/factories/',\n    activity('get_env_parameters').output.firstRow.adf, \n    '/pipelines/', item().task, \n    '/createRun?api-version=2018-06-01'\n )",
+									"type": "Expression"
+								},
+								"authentication": {
+									"type": "MSI"
+								}
+							}
 						},
 						{
 							"name": "set_run_id",
