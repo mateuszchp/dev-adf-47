@@ -1,0 +1,98 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dev-adf-47"
+		},
+		"ln_dev_akv_47_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-akv-47.vault.azure.net/"
+		},
+		"ln_devaccount47_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://devaccount47.dfs.core.windows.net/"
+		},
+		"ln_devaccount47_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "de5bd167-c2de-4467-adbe-5c907f146c74"
+		},
+		"ln_devaccount47_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
+		},
+		"ln_sqldb_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "devsqlserver47.database.windows.net"
+		},
+		"ln_sqldb_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "dev-db"
+		},
+		"ln_sqldb_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
+		},
+		"ln_sqldb_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "de5bd167-c2de-4467-adbe-5c907f146c74"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "dev-adf-47_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ln_dev_akv_47_properties_typeProperties_baseUrl": {
+						"value": "[parameters('ln_dev_akv_47_properties_typeProperties_baseUrl')]"
+					},
+					"ln_devaccount47_properties_typeProperties_url": {
+						"value": "[parameters('ln_devaccount47_properties_typeProperties_url')]"
+					},
+					"ln_devaccount47_properties_typeProperties_tenant": {
+						"value": "[parameters('ln_devaccount47_properties_typeProperties_tenant')]"
+					},
+					"ln_devaccount47_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('ln_devaccount47_properties_typeProperties_servicePrincipalId')]"
+					},
+					"ln_sqldb_properties_typeProperties_server": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_server')]"
+					},
+					"ln_sqldb_properties_typeProperties_database": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_database')]"
+					},
+					"ln_sqldb_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_servicePrincipalId')]"
+					},
+					"ln_sqldb_properties_typeProperties_tenant": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_tenant')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

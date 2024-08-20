@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dev-adf-47"
+		},
+		"ln_dev_akv_47_properties_typeProperties_baseUrl": {
+			"value": "https://dev-akv-47.vault.azure.net/"
+		},
+		"ln_devaccount47_properties_typeProperties_url": {
+			"value": "https://devaccount47.dfs.core.windows.net/"
+		},
+		"ln_devaccount47_properties_typeProperties_tenant": {
+			"value": "de5bd167-c2de-4467-adbe-5c907f146c74"
+		},
+		"ln_devaccount47_properties_typeProperties_servicePrincipalId": {
+			"value": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
+		},
+		"ln_sqldb_properties_typeProperties_server": {
+			"value": "devsqlserver47.database.windows.net"
+		},
+		"ln_sqldb_properties_typeProperties_database": {
+			"value": "dev-db"
+		},
+		"ln_sqldb_properties_typeProperties_servicePrincipalId": {
+			"value": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
+		},
+		"ln_sqldb_properties_typeProperties_tenant": {
+			"value": "de5bd167-c2de-4467-adbe-5c907f146c74"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
