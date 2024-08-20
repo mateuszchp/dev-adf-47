@@ -48,7 +48,14 @@
 						{
 							"name": "check_task_status",
 							"type": "WebActivity",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "pause",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -108,6 +115,15 @@
 							"typeProperties": {
 								"message": "Check status failed.",
 								"errorCode": "50005"
+							}
+						},
+						{
+							"name": "pause",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 5
 							}
 						}
 					],
