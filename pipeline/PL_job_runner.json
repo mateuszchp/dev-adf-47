@@ -344,7 +344,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "v_run_id",
-								"value": "333"
+								"value": {
+									"value": "@activity('run_task').output.runId",
+									"type": "Expression"
+								}
 							}
 						}
 					]
