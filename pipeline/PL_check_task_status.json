@@ -1,9 +1,60 @@
 {
 	"name": "PL_check_task_status",
 	"properties": {
+		"activities": [
+			{
+				"name": "get_env_parameters",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT * FROM\n(\n\tSELECT parameter, value\n\tFROM config.environment\n) AS base\nPIVOT\n(\n\tMAX(value) FOR parameter IN (subscription, rg, adf)\n) AS pivoted",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_azure_sqldb",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "check_status",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "get_env_parameters",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"timeout": "0.12:00:00"
+				}
+			}
+		],
 		"parameters": {
 			"p_run_id": {
 				"type": "string"
+			},
+			"p_job": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"v_task_status": {
+				"type": "String"
 			}
 		},
 		"folder": {
