@@ -63,10 +63,6 @@
 									"value": "@concat(\n    'https://management.azure.com/subscriptions/',\n    activity('get_env_parameters').output.firstRow.subscription,\n    '/resourceGroups/', \n    activity('get_env_parameters').output.firstRow.rg,\n    '/providers/Microsoft.DataFactory/factories/',\n    activity('get_env_parameters').output.firstRow.adf, \n    '/pipelineruns/', pipeline().parameters.p_run_id, \n    '?api-version=2018-06-01'\n )",
 									"type": "Expression"
 								},
-								"body": {
-									"value": "@concat(\n    '{\"p_job\" : \"', item().job,\n    '\", \"p_job_id\" : \"', variables('v_job_id'),\n    '\", \"p_task_sequence\" : \"', item().task_sequence, '\"}'\n)",
-									"type": "Expression"
-								},
 								"authentication": {
 									"type": "MSI",
 									"resource": "https://management.azure.com/"
