@@ -139,7 +139,28 @@
 					"dataset": {
 						"referenceName": "ds_generic_azure_sqldb",
 						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "for_each_task",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_tasks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get_tasks').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true
 				}
 			}
 		],
