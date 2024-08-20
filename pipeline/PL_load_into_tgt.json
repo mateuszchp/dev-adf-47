@@ -491,6 +491,17 @@
 				}
 			}
 		],
+		"parameters": {
+			"p_job": {
+				"type": "string"
+			},
+			"p_job_id": {
+				"type": "string"
+			},
+			"p_task_sequence": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "_FRAMEWORK"
 		},
