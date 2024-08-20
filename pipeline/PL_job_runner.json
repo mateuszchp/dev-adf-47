@@ -1,0 +1,9 @@
+{
+	"name": "PL_job_runner",
+	"properties": {
+		"folder": {
+			"name": "_FRAMEWORK"
+		},
+		"annotations": []
+	}
+}
