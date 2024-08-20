@@ -1,0 +1,9 @@
+{
+	"name": "PL_check_task_status",
+	"properties": {
+		"folder": {
+			"name": "_FRAMEWORK"
+		},
+		"annotations": []
+	}
+}
