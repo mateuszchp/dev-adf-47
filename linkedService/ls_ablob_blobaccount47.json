@@ -1,0 +1,11 @@
+{
+	"name": "ls_ablob_blobaccount47",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://blobaccount47.blob.core.windows.net/",
+			"accountKind": "StorageV2"
+		}
+	}
+}
