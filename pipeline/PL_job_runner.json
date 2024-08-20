@@ -109,6 +109,9 @@
 			},
 			"v_task_status": {
 				"type": "String"
+			},
+			"v_run_id": {
+				"type": "String"
 			}
 		},
 		"folder": {
