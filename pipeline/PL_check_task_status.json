@@ -40,6 +40,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"expression": {
+						"value": "@not(or(equals(variables('v_task_status'), 'InProgress'), equals(variables('v_task_status'), 'Queued')))",
+						"type": "Expression"
+					},
 					"timeout": "0.12:00:00"
 				}
 			}
