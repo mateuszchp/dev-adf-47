@@ -5,6 +5,9 @@
 			"referenceName": "ls_ablob_blobaccount47",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Covid"
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
