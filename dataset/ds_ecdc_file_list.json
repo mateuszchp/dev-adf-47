@@ -1,6 +1,7 @@
 {
 	"name": "ds_ecdc_file_list",
 	"properties": {
+		"description": "This is the metadata config file pointer. So that pipelines relying on current ECDC sources know what they are.",
 		"linkedServiceName": {
 			"referenceName": "ls_ablob_blobaccount47",
 			"type": "LinkedServiceReference"
