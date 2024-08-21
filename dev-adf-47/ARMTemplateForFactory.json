@@ -47,17 +47,13 @@
 			"type": "string",
 			"defaultValue": "https://devaccount47.dfs.core.windows.net/"
 		},
-		"tr_ingest_population_data_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/5ae67b66-7c74-4579-9c78-469b13aaedb4/resourceGroups/lab-rg/providers/Microsoft.Storage/storageAccounts/blobaccount47"
-		},
 		"ls_http_ecdc_github_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/cloudboxacademy/covid19/main/ecdc_data/"
 		},
-		"tr_ingest_hospital_admissions_data_properties_pl_ingest_ecdc_github_data_parameters_p_filename": {
+		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
-			"defaultValue": "hospital_admissions.csv"
+			"defaultValue": "/subscriptions/5ae67b66-7c74-4579-9c78-469b13aaedb4/resourceGroups/lab-rg/providers/Microsoft.Storage/storageAccounts/blobaccount47"
 		}
 	},
 	"variables": {
@@ -4514,6 +4510,199 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_cases_deaths_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_ecdc_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_http_ecdc_github_csv_generic",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_filename": {
+										"value": "@pipeline().parameters.p_filename",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_devaccount47_txt_generic",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_container": "raw",
+									"p_folder": "ecdc",
+									"p_filename": {
+										"value": "@pipeline().parameters.p_filename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_filename": {
+						"type": "string",
+						"defaultValue": "cases_deaths.csv"
+					}
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_http_ecdc_github_csv_generic')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_devaccount47_txt_generic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_ecdc_github_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_ecdc_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_http_ecdc_github_csv_generic",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_filename": {
+										"value": "@pipeline().parameters.p_filename",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_devaccount47_txt_generic",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_container": "raw",
+									"p_folder": "ecdc",
+									"p_filename": {
+										"value": "@pipeline().parameters.p_filename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_http_ecdc_github_csv_generic')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_devaccount47_txt_generic')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_ingest_population_data')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4922,6 +5111,59 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_devaccount47_txt_generic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_devaccount47",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_container": {
+						"type": "string",
+						"defaultValue": "raw"
+					},
+					"p_folder": {
+						"type": "string"
+					},
+					"p_filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_filename",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().p_folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().p_container",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": ""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_devaccount47')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_generic_adls_text_file')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5024,6 +5266,44 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_http_ecdc_github_csv_generic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_http_ecdc_github",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().p_filename",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_http_ecdc_github')]"
 			]
 		},
 		{
@@ -5186,6 +5466,21 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ls_http_ecdc_github')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_http_ecdc_github_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/tr_ingest_population_data')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -5216,67 +5511,49 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_http_ecdc_github')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/ds_ecdc_file_list')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "This is the metadata config file pointer. So that pipelines relying on current ECDC sources know what they are.",
+				"linkedServiceName": {
+					"referenceName": "ls_ablob_blobaccount47",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Covid"
+				},
 				"annotations": [],
-				"type": "HttpServer",
+				"type": "Json",
 				"typeProperties": {
-					"url": "[parameters('ls_http_ecdc_github_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ecdc_file_list.json",
+						"container": "configs"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"p_filename": {
+							"type": "string"
+						}
+					}
 				}
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_http_ecdc_github_csv_generic')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_http_ecdc_github",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"p_filename": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Covid"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": {
-							"value": "@dataset().p_filename",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_http_ecdc_github')]"
+				"[concat(variables('factoryId'), '/linkedServices/ls_ablob_blobaccount47')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_ingest_cases_deaths_data')]",
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_all_ecdc_data')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "copy_ecdc_data",
-						"type": "Copy",
+						"name": "get_file_list",
+						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -5288,220 +5565,100 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "DelimitedTextSource",
+								"type": "JsonSource",
 								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
+									"type": "JsonReadSettings"
 								}
 							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
+							"dataset": {
+								"referenceName": "ds_ecdc_file_list",
+								"type": "DatasetReference",
+								"parameters": {}
 							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_http_ecdc_github_csv_generic",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_filename": {
-										"value": "@pipeline().parameters.p_filename",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_adls_devaccount47_txt_generic",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_container": "raw",
-									"p_folder": "ecdc",
-									"p_filename": {
-										"value": "@pipeline().parameters.p_filename",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"p_filename": {
-						"type": "string",
-						"defaultValue": "cases_deaths.csv"
-					}
-				},
-				"folder": {
-					"name": "Covid"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_http_ecdc_github_csv_generic')]",
-				"[concat(variables('factoryId'), '/datasets/ds_adls_devaccount47_txt_generic')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_adls_devaccount47_txt_generic')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_adls_devaccount47",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"p_container": {
-						"type": "string",
-						"defaultValue": "raw"
-					},
-					"p_folder": {
-						"type": "string"
-					},
-					"p_filename": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Covid"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().p_filename",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().p_folder",
-							"type": "Expression"
-						},
-						"fileSystem": {
-							"value": "@dataset().p_container",
-							"type": "Expression"
+							"firstRowOnly": false
 						}
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": ""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_adls_devaccount47')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_ingest_ecdc_github_data')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
 					{
-						"name": "copy_ecdc_data",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
+						"name": "ingest_each_file",
+						"type": "ForEach",
+						"dependsOn": [
 							{
-								"referenceName": "ds_http_ecdc_github_csv_generic",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_filename": {
-										"value": "@pipeline().parameters.p_filename",
-										"type": "Expression"
-									}
-								}
+								"activity": "get_file_list",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
-						"outputs": [
-							{
-								"referenceName": "ds_adls_devaccount47_txt_generic",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_container": "raw",
-									"p_folder": "ecdc",
-									"p_filename": {
-										"value": "@pipeline().parameters.p_filename",
-										"type": "Expression"
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_file_list').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"batchCount": 32,
+							"activities": [
+								{
+									"name": "set_current_file",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "v_filename",
+										"value": {
+											"value": "@item().p_filename",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ingest_ecdc_data",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "set_current_file",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pl_ingest_ecdc_github_data",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"p_filename": {
+												"value": "@variables('v_filename')",
+												"type": "Expression"
+											}
+										}
 									}
 								}
-							}
-						]
+							]
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"parameters": {
-					"p_filename": {
-						"type": "string"
+				"variables": {
+					"v_filename": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -5510,12 +5667,12 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_http_ecdc_github_csv_generic')]",
-				"[concat(variables('factoryId'), '/datasets/ds_adls_devaccount47_txt_generic')]"
+				"[concat(variables('factoryId'), '/datasets/ds_ecdc_file_list')]",
+				"[concat(variables('factoryId'), '/pipelines/pl_ingest_ecdc_github_data')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tr_ingest_hospital_admissions_data')]",
+			"name": "[concat(parameters('factoryName'), '/tr_ingest_all_ecdc_data')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -5524,12 +5681,10 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "pl_ingest_ecdc_github_data",
+							"referenceName": "pl_ingest_all_ecdc_data",
 							"type": "PipelineReference"
 						},
-						"parameters": {
-							"p_filename": "[parameters('tr_ingest_hospital_admissions_data_properties_pl_ingest_ecdc_github_data_parameters_p_filename')]"
-						}
+						"parameters": {}
 					}
 				],
 				"type": "ScheduleTrigger",
@@ -5537,21 +5692,21 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-08-21T12:00:00",
+						"startTime": "2024-08-21T15:00:00",
 						"timeZone": "Central European Standard Time",
 						"schedule": {
 							"minutes": [
-								47
+								9
 							],
 							"hours": [
-								14
+								17
 							]
 						}
 					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_ingest_ecdc_github_data')]"
+				"[concat(variables('factoryId'), '/pipelines/pl_ingest_all_ecdc_data')]"
 			]
 		}
 	]

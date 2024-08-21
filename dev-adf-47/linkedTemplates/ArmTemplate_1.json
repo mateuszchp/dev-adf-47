@@ -10,16 +10,174 @@
 		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/5ae67b66-7c74-4579-9c78-469b13aaedb4/resourceGroups/lab-rg/providers/Microsoft.Storage/storageAccounts/blobaccount47"
-		},
-		"tr_ingest_hospital_admissions_data_properties_pl_ingest_ecdc_github_data_parameters_p_filename": {
-			"type": "string",
-			"defaultValue": "hospital_admissions.csv"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_check_task_status')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_env_parameters",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * FROM\n(\n\tSELECT parameter, value\n\tFROM config.environment\n) AS base\nPIVOT\n(\n\tMAX(value) FOR parameter IN (subscription, rg, adf)\n) AS pivoted",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_generic_azure_sqldb",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "await_task_completion",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "get_env_parameters",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(or(equals(variables('v_task_status'), 'InProgress'), equals(variables('v_task_status'), 'Queued')))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "check_task_status",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "pause",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(\n    'https://management.azure.com/subscriptions/',\n    activity('get_env_parameters').output.firstRow.subscription,\n    '/resourceGroups/', \n    activity('get_env_parameters').output.firstRow.rg,\n    '/providers/Microsoft.DataFactory/factories/',\n    activity('get_env_parameters').output.firstRow.adf, \n    '/pipelineruns/', pipeline().parameters.p_run_id, \n    '?api-version=2018-06-01'\n )",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.azure.com/"
+										}
+									}
+								},
+								{
+									"name": "set_task_status",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "check_task_status",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "v_task_status",
+										"value": {
+											"value": "@activity('check_task_status').output.status",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "task_failed",
+									"type": "Fail",
+									"dependsOn": [
+										{
+											"activity": "check_task_status",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "Check status failed.",
+										"errorCode": "50005"
+									}
+								},
+								{
+									"name": "pause",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 5
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_run_id": {
+						"type": "string"
+					},
+					"p_job": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"v_task_status": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "_FRAMEWORK"
+				},
+				"annotations": [
+					"@pipeline().parameters.p_job"
+				]
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -3779,40 +3937,125 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tr_ingest_hospital_admissions_data')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_all_ecdc_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
+				"activities": [
 					{
-						"pipelineReference": {
-							"referenceName": "pl_ingest_ecdc_github_data",
-							"type": "PipelineReference"
+						"name": "get_file_list",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
 						},
-						"parameters": {
-							"p_filename": "[parameters('tr_ingest_hospital_admissions_data_properties_pl_ingest_ecdc_github_data_parameters_p_filename')]"
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "ds_ecdc_file_list",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
 						}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2024-08-21T12:00:00",
-						"timeZone": "Central European Standard Time",
-						"schedule": {
-							"minutes": [
-								47
-							],
-							"hours": [
-								14
+					},
+					{
+						"name": "ingest_each_file",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_file_list",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_file_list').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"batchCount": 32,
+							"activities": [
+								{
+									"name": "set_current_file",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "v_filename",
+										"value": {
+											"value": "@item().p_filename",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ingest_ecdc_data",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "set_current_file",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pl_ingest_ecdc_github_data",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"p_filename": {
+												"value": "@variables('v_filename')",
+												"type": "Expression"
+											}
+										}
+									}
+								}
 							]
 						}
 					}
-				}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"v_filename": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -4331,7 +4574,47 @@
 					"@pipeline().parameters.p_job"
 				]
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PL_check_task_status')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_ingest_all_ecdc_data')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_ingest_all_ecdc_data",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-08-21T15:00:00",
+						"timeZone": "Central European Standard Time",
+						"schedule": {
+							"minutes": [
+								9
+							],
+							"hours": [
+								17
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_ingest_all_ecdc_data')]"
+			]
 		}
 	]
 }
