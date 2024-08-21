@@ -74,9 +74,21 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(activity('get_file_metadata').output.columnCount, 13)",
+						"value": "@equals(activity('get_file_metadata').output.columnCount, 14)",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "notify_error",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "File does not have expected number of columns (14) [This is fake, true expected is 13]",
+								"errorCode": "50006"
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "Copy population data",
