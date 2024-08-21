@@ -29,6 +29,12 @@
 		"ln_sqldb_properties_typeProperties_tenant": {
 			"value": "de5bd167-c2de-4467-adbe-5c907f146c74"
 		},
+		"ls_ablob_blobaccount47_properties_typeProperties_serviceEndpoint": {
+			"value": "https://blobaccount47.blob.core.windows.net/"
+		},
+		"ls_adls_devaccount47_properties_typeProperties_url": {
+			"value": "https://devaccount47.dfs.core.windows.net/"
+		},
 		"containerUri": {
 			"value": ""
 		},

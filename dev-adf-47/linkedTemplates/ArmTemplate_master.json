@@ -39,6 +39,14 @@
 			"type": "string",
 			"defaultValue": "de5bd167-c2de-4467-adbe-5c907f146c74"
 		},
+		"ls_ablob_blobaccount47_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://blobaccount47.blob.core.windows.net/"
+		},
+		"ls_adls_devaccount47_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://devaccount47.dfs.core.windows.net/"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -69,6 +77,12 @@
 					"ln_dev_akv_47_properties_typeProperties_baseUrl": {
 						"value": "[parameters('ln_dev_akv_47_properties_typeProperties_baseUrl')]"
 					},
+					"ls_ablob_blobaccount47_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('ls_ablob_blobaccount47_properties_typeProperties_serviceEndpoint')]"
+					},
+					"ls_adls_devaccount47_properties_typeProperties_url": {
+						"value": "[parameters('ls_adls_devaccount47_properties_typeProperties_url')]"
+					},
 					"ln_devaccount47_properties_typeProperties_url": {
 						"value": "[parameters('ln_devaccount47_properties_typeProperties_url')]"
 					},
@@ -93,6 +107,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "dev-adf-47_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dev-adf-47_ArmTemplate_0')]"
+			]
 		}
 	]
 }
