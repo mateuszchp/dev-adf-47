@@ -1,0 +1,76 @@
+{
+	"name": "pl_ingest_cases_deaths",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_http_csv_generic",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_filename": "case_deaths.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_devaccount47_txt_generic",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_container": "raw",
+							"p_folder": "ecdc",
+							"p_filename": "case_deaths.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Covid"
+		},
+		"annotations": []
+	}
+}
