@@ -1,5 +1,5 @@
 {
-	"name": "test_ecdc",
+	"name": "pl_ingest_all_ecdc_data",
 	"properties": {
 		"activities": [
 			{
@@ -50,6 +50,7 @@
 						"value": "@activity('get_file_list').output.value",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"batchCount": 32,
 					"activities": [
 						{
