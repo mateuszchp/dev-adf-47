@@ -34,6 +34,9 @@
 		},
 		"ls_adls_devaccount47_properties_typeProperties_url": {
 			"value": "https://devaccount47.dfs.core.windows.net/"
+		},
+		"tr_ingest_population_data_properties_typeProperties_scope": {
+			"value": "/subscriptions/5ae67b66-7c74-4579-9c78-469b13aaedb4/resourceGroups/lab-rg/providers/Microsoft.Storage/storageAccounts/blobaccount47"
 		}
 	}
 }
