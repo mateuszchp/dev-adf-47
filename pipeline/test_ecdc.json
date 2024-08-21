@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
+				"name": "get_file_list",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -34,11 +34,11 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "ingest_each_file",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "get_file_list",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -47,13 +47,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output.value",
+						"value": "@activity('get_file_list').output.value",
 						"type": "Expression"
 					},
 					"batchCount": 32,
 					"activities": [
 						{
-							"name": "Set variable1",
+							"name": "set_current_file",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
@@ -66,6 +66,35 @@
 								"value": {
 									"value": "@item().p_filename",
 									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "ingest_ecdc_data",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "set_current_file",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "pl_ingest_ecdc_github_data",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"p_filename": {
+										"value": "@variables('v_filename')",
+										"type": "Expression"
+									}
 								}
 							}
 						}
