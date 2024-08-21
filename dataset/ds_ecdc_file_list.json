@@ -17,6 +17,13 @@
 				"container": "configs"
 			}
 		},
-		"schema": {}
+		"schema": {
+			"type": "object",
+			"properties": {
+				"p_filename": {
+					"type": "string"
+				}
+			}
+		}
 	}
 }
