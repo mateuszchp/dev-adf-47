@@ -17,6 +17,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Covid"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

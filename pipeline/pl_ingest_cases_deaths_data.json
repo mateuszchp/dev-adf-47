@@ -1,5 +1,5 @@
 {
-	"name": "pl_ingest_cases_deaths",
+	"name": "pl_ingest_cases_deaths_data",
 	"properties": {
 		"activities": [
 			{
@@ -51,7 +51,10 @@
 						"referenceName": "ds_http_csv_generic",
 						"type": "DatasetReference",
 						"parameters": {
-							"p_filename": "cases_deaths.csv"
+							"p_filename": {
+								"value": "@pipeline().parameters.p_filename",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -62,12 +65,20 @@
 						"parameters": {
 							"p_container": "raw",
 							"p_folder": "ecdc",
-							"p_filename": "case_deaths.csv"
+							"p_filename": {
+								"value": "@pipeline().parameters.p_filename",
+								"type": "Expression"
+							}
 						}
 					}
 				]
 			}
 		],
+		"parameters": {
+			"p_filename": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "Covid"
 		},
