@@ -127,6 +127,10 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "population",
+							"Directory": {
+								"value": "@string('')",
+								"type": "Expression"
+							},
 							"filename": "population_by_age.tsv.gz"
 						}
 					}
