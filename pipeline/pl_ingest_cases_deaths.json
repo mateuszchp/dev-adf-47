@@ -51,7 +51,7 @@
 						"referenceName": "ds_http_csv_generic",
 						"type": "DatasetReference",
 						"parameters": {
-							"p_filename": "case_deaths.csv"
+							"p_filename": "cases_deaths.csv"
 						}
 					}
 				],
