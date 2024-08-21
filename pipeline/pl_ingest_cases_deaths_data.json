@@ -76,7 +76,8 @@
 		],
 		"parameters": {
 			"p_filename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "cases_deaths.csv"
 			}
 		},
 		"folder": {
