@@ -143,7 +143,7 @@
 							"Container": "raw",
 							"Directory": "population/archive",
 							"filename": {
-								"value": "@concat('population_by_age__',formatDateTime(utcNow(), 'YYYY-MM-DD-HH-mm'),'.tsv.gz')",
+								"value": "@concat('population_by_age__',formatDateTime(utcNow(), 'yyyy-MM-dd-HH-mm'),'.tsv.gz')",
 								"type": "Expression"
 							}
 						}
