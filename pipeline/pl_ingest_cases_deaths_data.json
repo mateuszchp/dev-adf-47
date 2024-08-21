@@ -48,7 +48,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_http_csv_generic",
+						"referenceName": "ds_http_ecdc_github_csv_generic",
 						"type": "DatasetReference",
 						"parameters": {
 							"p_filename": {

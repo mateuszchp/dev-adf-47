@@ -1,5 +1,5 @@
 {
-	"name": "ds_http_csv_generic",
+	"name": "ds_http_ecdc_github_csv_generic",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_http_ecdc_github",
