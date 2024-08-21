@@ -83,9 +83,16 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "Move raw population data",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Copy population data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -95,8 +102,49 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
 					"enableStaging": false
-				}
+				},
+				"inputs": [
+					{
+						"referenceName": "BinaryDataSource_File",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "population",
+							"filename": "population_by_age.tsv.gz"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "BinaryDataDestination",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "raw",
+							"Directory": "population/archive",
+							"filename": {
+								"value": "@concat('population_by_age__',formatDateTime(utcNow(), 'YYYY-MM-DD-HH-mm'),'.tsv.gz')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
 			}
 		],
 		"concurrency": 1,
