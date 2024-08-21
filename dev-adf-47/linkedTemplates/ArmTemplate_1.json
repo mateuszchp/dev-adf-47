@@ -3995,33 +3995,9 @@
 							"batchCount": 32,
 							"activities": [
 								{
-									"name": "set_current_file",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "v_filename",
-										"value": {
-											"value": "@item().p_filename",
-											"type": "Expression"
-										}
-									}
-								},
-								{
 									"name": "ingest_ecdc_data",
 									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "set_current_file",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
+									"dependsOn": [],
 									"policy": {
 										"secureInput": false
 									},
@@ -4034,7 +4010,7 @@
 										"waitOnCompletion": true,
 										"parameters": {
 											"p_filename": {
-												"value": "@variables('v_filename')",
+												"value": "@item().p_filename",
 												"type": "Expression"
 											}
 										}
@@ -4046,11 +4022,6 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"v_filename": {
-						"type": "String"
-					}
 				},
 				"folder": {
 					"name": "Covid"
@@ -4603,7 +4574,7 @@
 						"timeZone": "Central European Standard Time",
 						"schedule": {
 							"minutes": [
-								9
+								12
 							],
 							"hours": [
 								17
