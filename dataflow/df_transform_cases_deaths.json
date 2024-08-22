@@ -59,7 +59,7 @@
 				"          reported_date,",
 				"          country_special = country + country_code),",
 				"     pivotBy(indicator),",
-				"     count = sum(daily_count),",
+				"     COUNT = sum(daily_count),",
 				"     columnNaming: '$V_$N',",
 				"     lateral: true) ~> PivotTheIndicatedCounts"
 			]
