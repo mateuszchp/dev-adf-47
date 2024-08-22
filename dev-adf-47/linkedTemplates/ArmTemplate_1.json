@@ -17,6 +17,235 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_generic_adls_text_file')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ln_devaccount47",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_foldername": {
+						"type": "string"
+					},
+					"p_filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_FRAMEWORK"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_filename",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().p_foldername",
+							"type": "Expression"
+						},
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": ""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_generic_azure_sqldb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ln_sqldb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "_FRAMEWORK"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_generic_par_azure_sqldb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ln_sqldb",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_schema": {
+						"type": "string"
+					},
+					"p_table": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_FRAMEWORK"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().p_schema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().p_table",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_transform_cases_deaths')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_raw_cases_and_deaths",
+								"type": "DatasetReference"
+							},
+							"name": "SourceCasesAndDeaths"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_country_lookup",
+								"type": "DatasetReference"
+							},
+							"name": "SourceCountryLookup"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_curated_cases_deaths",
+								"type": "DatasetReference"
+							},
+							"name": "CasesDeathsSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "FilterEuropeOnly"
+						},
+						{
+							"name": "SelectAndRenameRelevantColumns"
+						},
+						{
+							"name": "PivotTheIndicatedCounts"
+						},
+						{
+							"name": "NewIndicatorColumn"
+						},
+						{
+							"name": "LookupCountry"
+						},
+						{
+							"name": "SelectRelevantColumns"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          country as string,",
+						"          country_code as string,",
+						"          continent as string,",
+						"          population as integer,",
+						"          indicator as string,",
+						"          daily_count as integer,",
+						"          date as date,",
+						"          rate_14_day as double,",
+						"          source as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> SourceCasesAndDeaths",
+						"source(output(",
+						"          country as string,",
+						"          country_code_2_digit as string,",
+						"          country_code_3_digit as string,",
+						"          continent as string,",
+						"          population as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> SourceCountryLookup",
+						"SourceCasesAndDeaths filter(continent == 'Europe' && not(isNull(country_code))) ~> FilterEuropeOnly",
+						"NewIndicatorColumn select(mapColumn(",
+						"          country,",
+						"          country_code,",
+						"          population,",
+						"          indicator = new_indicator,",
+						"          daily_count,",
+						"          source,",
+						"          each(match(name=='date'),",
+						"               'reported_date' = $$)",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectAndRenameRelevantColumns",
+						"SelectAndRenameRelevantColumns pivot(groupBy(country,",
+						"          country_code,",
+						"          population,",
+						"          source,",
+						"          reported_date),",
+						"     pivotBy(indicator, ['cases', 'deaths']),",
+						"     count = sum(daily_count),",
+						"     columnNaming: '$V_$N',",
+						"     lateral: true) ~> PivotTheIndicatedCounts",
+						"FilterEuropeOnly derive(new_indicator = case(indicator=='confirmed cases', 'cases', 'deaths')) ~> NewIndicatorColumn",
+						"PivotTheIndicatedCounts, SourceCountryLookup lookup(country_code == country_code_3_digit,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> LookupCountry",
+						"LookupCountry select(mapColumn(",
+						"          country = PivotTheIndicatedCounts@country,",
+						"          country_code_2_digit,",
+						"          country_code_3_digit,",
+						"          population = PivotTheIndicatedCounts@population,",
+						"          cases_count,",
+						"          deaths_count,",
+						"          source,",
+						"          reported_date",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
+						"SelectRelevantColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     truncate: true,",
+						"     umask: 0220,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1) ~> CasesDeathsSink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_check_task_status')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -176,7 +405,9 @@
 					"@pipeline().parameters.p_job"
 				]
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb')]",
@@ -859,7 +1090,10 @@
 					"@pipeline().parameters.p_job"
 				]
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_1_not_transposed')]",
@@ -971,7 +1205,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_2_hardcoded_transpose')]",
@@ -1089,7 +1326,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_3_4_with_dynamic_SP_and_logging')]",
@@ -1439,7 +1679,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_5_controlled')]",
@@ -1972,7 +2215,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_6_incremental')]",
@@ -2598,7 +2844,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_mySPexample')]",
@@ -2727,7 +2976,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_load_into_stg')]",
@@ -3283,7 +3535,9 @@
 					"@pipeline().parameters.p_job"
 				]
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_load_into_tgt')]",
@@ -3826,7 +4080,9 @@
 					"@pipeline().parameters.p_job"
 				]
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_test_copy_to_staging')]",
@@ -3906,7 +4162,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]",
+				"[concat(variables('factoryId'), '/datasets/ds_generic_par_azure_sqldb')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_ingest_all_ecdc_data')]",
@@ -4546,6 +4805,7 @@
 				]
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
 				"[concat(variables('factoryId'), '/pipelines/PL_check_task_status')]"
 			]
 		},
