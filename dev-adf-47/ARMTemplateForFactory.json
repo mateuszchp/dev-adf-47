@@ -6005,7 +6005,8 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1) ~> CasesDeathsSink"
+						"     saveOrder: 1,",
+						"     partitionBy('roundRobin', 4)) ~> CasesDeathsSink"
 					]
 				}
 			},
