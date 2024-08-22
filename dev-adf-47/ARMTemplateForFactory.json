@@ -4585,6 +4585,10 @@
 											"p_filename": {
 												"value": "@item().p_filename",
 												"type": "Expression"
+											},
+											"p_sourcename": {
+												"value": "@item().p_sourcename",
+												"type": "Expression"
 											}
 										}
 									}
@@ -4759,7 +4763,7 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"p_filename": {
-										"value": "@pipeline().parameters.p_filename",
+										"value": "@pipeline().parameters.p_sourcename",
 										"type": "Expression"
 									}
 								}
@@ -4786,6 +4790,9 @@
 				},
 				"parameters": {
 					"p_filename": {
+						"type": "string"
+					},
+					"p_sourcename": {
 						"type": "string"
 					}
 				},
@@ -5371,6 +5378,9 @@
 					"referenceName": "ls_adls_devaccount47",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Covid"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -5650,7 +5660,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "cases_deaths.csv",
-						"folderPath": "ecdc",
+						"folderPath": "ecdc/cases_deaths",
 						"fileSystem": "raw"
 					},
 					"columnDelimiter": ",",
@@ -6263,13 +6273,16 @@
 					"referenceName": "ls_adls_devaccount47",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Covid"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "hospital_admissions.csv",
-						"folderPath": "ecdc",
+						"folderPath": "ecdc/hospital_admissions",
 						"fileSystem": "raw"
 					},
 					"columnDelimiter": ",",
@@ -6320,6 +6333,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_adls_devaccount47",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Covid"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -6398,6 +6414,9 @@
 					"referenceName": "ls_adls_devaccount47",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Covid"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -6425,6 +6444,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_adls_devaccount47",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Covid"
 				},
 				"annotations": [],
 				"type": "DelimitedText",

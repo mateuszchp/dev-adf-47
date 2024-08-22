@@ -21,6 +21,9 @@
 					"referenceName": "ls_adls_devaccount47",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Covid"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -188,7 +191,7 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"p_filename": {
-										"value": "@pipeline().parameters.p_filename",
+										"value": "@pipeline().parameters.p_sourcename",
 										"type": "Expression"
 									}
 								}
@@ -215,6 +218,9 @@
 				},
 				"parameters": {
 					"p_filename": {
+						"type": "string"
+					},
+					"p_sourcename": {
 						"type": "string"
 					}
 				},
