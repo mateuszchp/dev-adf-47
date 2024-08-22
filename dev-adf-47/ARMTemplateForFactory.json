@@ -6570,7 +6570,7 @@
 						"typeProperties": {
 							"scriptPath": "scripts/covid_transform_testing.hql",
 							"scriptLinkedService": {
-								"referenceName": "ls_adls_devaccount47",
+								"referenceName": "ls_adfs_hdi",
 								"type": "LinkedServiceReference"
 							}
 						},
@@ -6590,7 +6590,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/linkedService1')]",
-				"[concat(variables('factoryId'), '/linkedServices/ls_adls_devaccount47')]"
+				"[concat(variables('factoryId'), '/linkedServices/ls_adfs_hdi')]"
 			]
 		},
 		{
