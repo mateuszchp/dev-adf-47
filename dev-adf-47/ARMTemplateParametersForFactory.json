@@ -11,6 +11,9 @@
 		"linkedService1_clusterSshPassword": {
 			"value": ""
 		},
+		"ls_adfs_hdi_connectionString": {
+			"value": ""
+		},
 		"ln_dev_akv_47_properties_typeProperties_baseUrl": {
 			"value": "https://dev-akv-47.vault.azure.net/"
 		},
