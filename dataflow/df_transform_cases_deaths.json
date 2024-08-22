@@ -114,6 +114,7 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 				"SelectRelevantColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     truncate: true,",
 				"     umask: 0220,",
 				"     preCommands: [],",
 				"     postCommands: [],",
