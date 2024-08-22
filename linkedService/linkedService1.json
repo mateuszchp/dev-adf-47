@@ -28,7 +28,7 @@
 				}
 			],
 			"linkedServiceName": {
-				"referenceName": "ln_devaccount47",
+				"referenceName": "ls_adfs_hdi",
 				"type": "LinkedServiceReference"
 			},
 			"headNodeSize": "",
