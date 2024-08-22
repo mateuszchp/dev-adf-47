@@ -18,7 +18,10 @@
 					"name": "FilterEuropeOnly"
 				},
 				{
-					"name": "select1"
+					"name": "SelectAndRenameRelevantColumns"
+				},
+				{
+					"name": "PivotTheIndicatedCounts"
 				}
 			],
 			"scriptLines": [
@@ -48,7 +51,17 @@
 				"               'reported_date' = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> SelectAndRenameRelevantColumns",
+				"SelectAndRenameRelevantColumns pivot(groupBy(country,",
+				"          country_code,",
+				"          population,",
+				"          source,",
+				"          reported_date,",
+				"          country_special = country + country_code),",
+				"     pivotBy(indicator),",
+				"     count = sum(daily_count),",
+				"     columnNaming: '$V_$N',",
+				"     lateral: true) ~> PivotTheIndicatedCounts"
 			]
 		}
 	}
