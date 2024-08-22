@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "pl_execute_df_transform_cases_deaths",
 	"properties": {
 		"activities": [
 			{
