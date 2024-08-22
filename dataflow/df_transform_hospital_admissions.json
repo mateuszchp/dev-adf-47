@@ -10,12 +10,25 @@
 						"type": "DatasetReference"
 					},
 					"name": "SourceHospitalAdmissions"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_country_lookup",
+						"type": "DatasetReference"
+					},
+					"name": "SourceCountryLookup"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
 					"name": "SelectAndRenameColumns"
+				},
+				{
+					"name": "LookupCountryCode"
+				},
+				{
+					"name": "SelectRelevantColumns"
 				}
 			],
 			"scriptLines": [
@@ -31,6 +44,16 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SourceHospitalAdmissions",
+				"source(output(",
+				"          country as string,",
+				"          country_code_2_digit as string,",
+				"          country_code_3_digit as string,",
+				"          continent as string,",
+				"          population as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceCountryLookup",
 				"SourceHospitalAdmissions select(mapColumn(",
 				"          country,",
 				"          indicator,",
@@ -40,7 +63,24 @@
 				"          source",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SelectAndRenameColumns"
+				"     skipDuplicateMapOutputs: true) ~> SelectAndRenameColumns",
+				"SelectAndRenameColumns, SourceCountryLookup lookup(SelectAndRenameColumns@country == SourceCountryLookup@country,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupCountryCode",
+				"LookupCountryCode select(mapColumn(",
+				"          country = SelectAndRenameColumns@country,",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
+				"          indicator,",
+				"          reported_date,",
+				"          reported_year_week,",
+				"          value,",
+				"          source,",
+				"          population",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns"
 			]
 		}
 	}
