@@ -5919,6 +5919,7 @@
 						"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 						"SelectRelevantColumns sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     partitionFileNames:['part'],",
 						"     truncate: true,",
 						"     umask: 0220,",
 						"     preCommands: [],",
