@@ -22,6 +22,9 @@
 				},
 				{
 					"name": "PivotTheIndicatedCounts"
+				},
+				{
+					"name": "NewIndicatorColumn"
 				}
 			],
 			"scriptLines": [
@@ -40,11 +43,11 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SourceCasesAndDeaths",
 				"SourceCasesAndDeaths filter(continent == 'Europe' && not(isNull(country_code))) ~> FilterEuropeOnly",
-				"FilterEuropeOnly select(mapColumn(",
+				"NewIndicatorColumn select(mapColumn(",
 				"          country,",
 				"          country_code,",
 				"          population,",
-				"          indicator,",
+				"          indicator = new_indicator,",
 				"          daily_count,",
 				"          source,",
 				"          each(match(name == 'date'),",
@@ -61,7 +64,8 @@
 				"     pivotBy(indicator),",
 				"     count = sum(daily_count),",
 				"     columnNaming: '$V_$N',",
-				"     lateral: true) ~> PivotTheIndicatedCounts"
+				"     lateral: true) ~> PivotTheIndicatedCounts",
+				"FilterEuropeOnly derive(new_indicator = case(indicator=='confirmed cases', 'cases', 'deaths')) ~> NewIndicatorColumn"
 			]
 		}
 	}
