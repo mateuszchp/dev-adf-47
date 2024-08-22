@@ -26,7 +26,22 @@
 					"name": "SourceDimDate"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_curated_daily_hospital_admissions",
+						"type": "DatasetReference"
+					},
+					"name": "SinkDaily"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_curated_weekly_hospital_admissions",
+						"type": "DatasetReference"
+					},
+					"name": "SinkWeekly"
+				}
+			],
 			"transformations": [
 				{
 					"name": "SelectAndRenameColumns"
@@ -193,7 +208,22 @@
 				"SelectFromPivotWeekly sort(desc(reported_year_week, true),",
 				"     asc(country, true)) ~> SortWeekly",
 				"SelectFromPivotDaily sort(desc(reported_date, true),",
-				"     asc(country, true)) ~> SortDaily"
+				"     asc(country, true)) ~> SortDaily",
+				"SortDaily sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     truncate: true,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkDaily",
+				"SortWeekly sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkWeekly"
 			]
 		}
 	}
