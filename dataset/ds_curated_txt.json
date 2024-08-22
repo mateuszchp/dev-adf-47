@@ -1,5 +1,5 @@
 {
-	"name": "ds_curated_cases_deaths",
+	"name": "ds_curated_txt",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_adls_devaccount47",
