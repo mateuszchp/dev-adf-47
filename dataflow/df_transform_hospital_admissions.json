@@ -29,6 +29,9 @@
 				},
 				{
 					"name": "SelectRelevantColumns"
+				},
+				{
+					"name": "SplitDailyWeekly"
 				}
 			],
 			"scriptLines": [
@@ -80,7 +83,9 @@
 				"          population",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns"
+				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
+				"SelectRelevantColumns split(startsWith(indicator, 'Daily'),",
+				"     disjoint: false) ~> SplitDailyWeekly@(DailyData, WeeklyData)"
 			]
 		}
 	}
