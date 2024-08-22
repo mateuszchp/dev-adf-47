@@ -52,7 +52,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"p_filename": {
-								"value": "@pipeline().parameters.p_filename",
+								"value": "@pipeline().parameters.p_sourcename",
 								"type": "Expression"
 							}
 						}
@@ -76,6 +76,9 @@
 		],
 		"parameters": {
 			"p_filename": {
+				"type": "string"
+			},
+			"p_sourcename": {
 				"type": "string"
 			}
 		},
