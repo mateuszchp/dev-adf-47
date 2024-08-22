@@ -6,6 +6,10 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-adf-47"
+		},
+		"ls_compute_databricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0810-100306-69fm3yke"
 		}
 	},
 	"variables": {
@@ -38,6 +42,28 @@
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_compute_databricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-4057062643285486.6.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ln_dev_akv_47",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "databricks-ws"
+					},
+					"existingClusterId": "[parameters('ls_compute_databricks_properties_typeProperties_existingClusterId')]"
+				}
 			},
 			"dependsOn": []
 		},
@@ -4809,89 +4835,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_test_copy_to_staging')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "copy_without_mapping",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"preCopyScript": "DROP TABLE IF EXISTS SalesLT.Customer_Stg2",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_generic_adls_text_file",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_foldername": "customer",
-									"p_filename": "customer.csv"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_generic_par_azure_sqldb",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_schema": "SalesLT",
-									"p_table": "Customer_Stg2"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "_FRAMEWORK/PLAYGROUND"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]",
-				"[concat(variables('factoryId'), '/datasets/ds_generic_par_azure_sqldb')]"
 			]
 		}
 	]
