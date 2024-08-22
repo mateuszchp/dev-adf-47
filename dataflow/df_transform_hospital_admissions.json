@@ -17,6 +17,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "SourceCountryLookup"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dimdate_lookup",
+						"type": "DatasetReference"
+					},
+					"name": "SourceDimDate"
 				}
 			],
 			"sinks": [],
@@ -32,6 +39,9 @@
 				},
 				{
 					"name": "SplitDailyWeekly"
+				},
+				{
+					"name": "AddECDCYearWeek"
 				}
 			],
 			"scriptLines": [
@@ -57,6 +67,23 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SourceCountryLookup",
+				"source(output(",
+				"          date_key as date,",
+				"          date as date,",
+				"          year as short,",
+				"          month as short,",
+				"          day as short,",
+				"          day_name as string,",
+				"          day_of_year as short,",
+				"          week_of_month as short,",
+				"          week_of_year as short,",
+				"          month_name as string,",
+				"          year_month as integer,",
+				"          year_week as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceDimDate",
 				"SourceHospitalAdmissions select(mapColumn(",
 				"          country,",
 				"          indicator,",
@@ -85,7 +112,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 				"SelectRelevantColumns split(startsWith(indicator, 'Daily'),",
-				"     disjoint: false) ~> SplitDailyWeekly@(DailyData, WeeklyData)"
+				"     disjoint: false) ~> SplitDailyWeekly@(DailyData, WeeklyData)",
+				"SourceDimDate derive(ecdc_year_wek = toString(year) + '-W' + lpad(toString(week_of_year), 2, '0')) ~> AddECDCYearWeek"
 			]
 		}
 	}
