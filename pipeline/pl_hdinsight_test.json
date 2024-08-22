@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"scriptPath": "scripts/covid_transform_testing.hql",
 					"scriptLinkedService": {
-						"referenceName": "ls_adls_devaccount47",
+						"referenceName": "ls_adfs_hdi",
 						"type": "LinkedServiceReference"
 					}
 				},
