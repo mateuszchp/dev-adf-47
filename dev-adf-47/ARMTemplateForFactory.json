@@ -7,14 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-adf-47"
 		},
-		"linkedService1_clusterPassword": {
-			"type": "secureString",
-			"metadata": "Secure string for 'clusterPassword' of 'linkedService1'"
-		},
-		"linkedService1_clusterSshPassword": {
-			"type": "secureString",
-			"metadata": "Secure string for 'clusterSshPassword' of 'linkedService1'"
-		},
 		"ls_adfs_hdi_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_adfs_hdi'"
@@ -66,22 +58,6 @@
 		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/5ae67b66-7c74-4579-9c78-469b13aaedb4/resourceGroups/lab-rg/providers/Microsoft.Storage/storageAccounts/blobaccount47"
-		},
-		"linkedService1_properties_typeProperties_hostSubscriptionId": {
-			"type": "string",
-			"defaultValue": "5ae67b66-7c74-4579-9c78-469b13aaedb4"
-		},
-		"linkedService1_properties_typeProperties_clusterResourceGroup": {
-			"type": "string",
-			"defaultValue": "dev-rg"
-		},
-		"linkedService1_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
-		},
-		"linkedService1_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "de5bd167-c2de-4467-adbe-5c907f146c74"
 		}
 	},
 	"variables": {
@@ -6547,97 +6523,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_transform_hospital_admissions')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_hdinsight_test')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Hive1",
-						"type": "HDInsightHive",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"scriptPath": "scripts/covid_transform_testing.hql",
-							"scriptLinkedService": {
-								"referenceName": "ls_adfs_hdi",
-								"type": "LinkedServiceReference"
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "linkedService1",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "Covid"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linkedService1')]",
-				"[concat(variables('factoryId'), '/linkedServices/ls_adfs_hdi')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/linkedService1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HDInsightOnDemand",
-				"typeProperties": {
-					"clusterType": "hadoop",
-					"clusterSize": 1,
-					"timeToLive": "00:05:00",
-					"version": "4.0",
-					"hostSubscriptionId": "[parameters('linkedService1_properties_typeProperties_hostSubscriptionId')]",
-					"clusterResourceGroup": "[parameters('linkedService1_properties_typeProperties_clusterResourceGroup')]",
-					"servicePrincipalId": "[parameters('linkedService1_properties_typeProperties_servicePrincipalId')]",
-					"tenant": "[parameters('linkedService1_properties_typeProperties_tenant')]",
-					"clusterNamePrefix": "",
-					"clusterPassword": {
-						"type": "SecureString",
-						"value": "[parameters('linkedService1_clusterPassword')]"
-					},
-					"clusterSshPassword": {
-						"type": "SecureString",
-						"value": "[parameters('linkedService1_clusterSshPassword')]"
-					},
-					"servicePrincipalKey": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "ln_dev_akv_47",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "dev-etl-sp-secret"
-					},
-					"linkedServiceName": {
-						"referenceName": "ls_adfs_hdi",
-						"type": "LinkedServiceReference"
-					},
-					"headNodeSize": "",
-					"dataNodeSize": "",
-					"zookeeperNodeSize": ""
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_adfs_hdi')]",
-				"[concat(variables('factoryId'), '/linkedServices/ln_dev_akv_47')]"
 			]
 		},
 		{
