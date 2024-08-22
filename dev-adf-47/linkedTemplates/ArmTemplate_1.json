@@ -181,7 +181,8 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> SourceCasesAndDeaths",
+						"     ignoreNoFilesFound: false,",
+						"     partitionBy('roundRobin', 4)) ~> SourceCasesAndDeaths",
 						"source(output(",
 						"          country as string,",
 						"          country_code_2_digit as string,",
@@ -233,7 +234,7 @@
 						"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 						"SelectRelevantColumns sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     partitionFileNames:['part'],",
+						"     filePattern:'part[n]',",
 						"     truncate: true,",
 						"     umask: 0220,",
 						"     preCommands: [],",
@@ -4263,34 +4264,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tr_ingest_population_data')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_ingest_population_data",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv.gz",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('tr_ingest_population_data_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/pl_process_cases_deaths')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4324,8 +4297,7 @@
 								"coreCount": 8,
 								"computeType": "General"
 							},
-							"traceLevel": "Fine",
-							"runConcurrently": false
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -4340,6 +4312,34 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_transform_cases_deaths')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_ingest_population_data')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_ingest_population_data",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv.gz",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('tr_ingest_population_data_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_job_runner')]",
