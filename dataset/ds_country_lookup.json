@@ -2,7 +2,7 @@
 	"name": "ds_country_lookup",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_ablob_blobaccount47",
+			"referenceName": "ls_adls_devaccount47",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
@@ -12,9 +12,9 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
+				"type": "AzureBlobFSLocation",
 				"fileName": "country_lookup.csv",
-				"container": "lookups"
+				"fileSystem": "lookups"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
