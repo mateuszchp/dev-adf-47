@@ -7,6 +7,22 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-adf-47"
 		},
+		"ln_sqldb_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "devsqlserver47.database.windows.net"
+		},
+		"ln_sqldb_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "dev-db"
+		},
+		"ln_sqldb_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
+		},
+		"ln_sqldb_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "de5bd167-c2de-4467-adbe-5c907f146c74"
+		},
 		"ls_compute_databricks_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "0810-100306-69fm3yke"
@@ -17,31 +33,29 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_curated_weekly_hospital_admissions')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/ln_sqldb')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_adls_devaccount47",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Covid"
-				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "ecdc/hospital_admissions/weekly",
-						"fileSystem": "curated"
+					"server": "[parameters('ln_sqldb_properties_typeProperties_server')]",
+					"database": "[parameters('ln_sqldb_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "ServicePrincipal",
+					"servicePrincipalId": "[parameters('ln_sqldb_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ln_dev_akv_47",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "dev-etl-sp-secret"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
+					"tenant": "[parameters('ln_sqldb_properties_typeProperties_tenant')]"
+				}
 			},
 			"dependsOn": []
 		},
@@ -562,6 +576,45 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_process_population')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "transform_population_data",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/covid/transform/transform_population_data"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_compute_databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_compute_databricks')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_generic_adls_text_file')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -622,7 +675,9 @@
 				"schema": [],
 				"typeProperties": {}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_generic_par_azure_sqldb')]",
@@ -658,7 +713,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_transform_cases_deaths')]",
@@ -1023,48 +1080,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_curated_weekly_hospital_admissions')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_process_population')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "transform_population_data",
-						"type": "DatabricksNotebook",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/covid/transform/transform_population_data"
-						},
-						"linkedServiceName": {
-							"referenceName": "ls_dynamic_compute_databricks",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "Covid"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dynamic_compute_databricks')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_check_task_status')]",
@@ -1913,7 +1929,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
-				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]",
+				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
 			]
 		},
 		{
@@ -2502,7 +2519,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
-				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]",
+				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
 			]
 		},
 		{
@@ -3038,7 +3056,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
-				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]",
+				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
 			]
 		},
 		{
@@ -3667,7 +3686,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_generic_azure_sqldb')]",
-				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]"
+				"[concat(variables('factoryId'), '/datasets/ds_generic_adls_text_file')]",
+				"[concat(variables('factoryId'), '/linkedServices/ln_sqldb')]"
 			]
 		},
 		{

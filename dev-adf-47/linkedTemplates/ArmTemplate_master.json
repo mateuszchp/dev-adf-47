@@ -47,6 +47,10 @@
 			"type": "string",
 			"defaultValue": "https://devaccount47.dfs.core.windows.net/"
 		},
+		"ls_compute_databricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0810-100306-69fm3yke"
+		},
 		"ls_http_ecdc_github_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/cloudboxacademy/covid19/main/ecdc_data/"
@@ -54,10 +58,6 @@
 		"tr_ingest_population_data_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/5ae67b66-7c74-4579-9c78-469b13aaedb4/resourceGroups/lab-rg/providers/Microsoft.Storage/storageAccounts/blobaccount47"
-		},
-		"ls_compute_databricks_properties_typeProperties_existingClusterId": {
-			"type": "string",
-			"defaultValue": "0810-100306-69fm3yke"
 		},
 		"containerUri": {
 			"type": "string",
@@ -106,18 +106,6 @@
 					},
 					"ln_devaccount47_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('ln_devaccount47_properties_typeProperties_servicePrincipalId')]"
-					},
-					"ln_sqldb_properties_typeProperties_server": {
-						"value": "[parameters('ln_sqldb_properties_typeProperties_server')]"
-					},
-					"ln_sqldb_properties_typeProperties_database": {
-						"value": "[parameters('ln_sqldb_properties_typeProperties_database')]"
-					},
-					"ln_sqldb_properties_typeProperties_servicePrincipalId": {
-						"value": "[parameters('ln_sqldb_properties_typeProperties_servicePrincipalId')]"
-					},
-					"ln_sqldb_properties_typeProperties_tenant": {
-						"value": "[parameters('ln_sqldb_properties_typeProperties_tenant')]"
 					}
 				}
 			},
@@ -136,6 +124,18 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"ln_sqldb_properties_typeProperties_server": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_server')]"
+					},
+					"ln_sqldb_properties_typeProperties_database": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_database')]"
+					},
+					"ln_sqldb_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_servicePrincipalId')]"
+					},
+					"ln_sqldb_properties_typeProperties_tenant": {
+						"value": "[parameters('ln_sqldb_properties_typeProperties_tenant')]"
 					},
 					"ls_compute_databricks_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('ls_compute_databricks_properties_typeProperties_existingClusterId')]"
