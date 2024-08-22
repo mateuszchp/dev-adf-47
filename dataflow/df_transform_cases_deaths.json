@@ -95,7 +95,8 @@
 				"     pivotBy(indicator, ['cases', 'deaths']),",
 				"     count = sum(daily_count),",
 				"     columnNaming: '$V_$N',",
-				"     lateral: true) ~> PivotTheIndicatedCounts",
+				"     lateral: true,",
+				"     partitionBy('roundRobin', 4)) ~> PivotTheIndicatedCounts",
 				"FilterEuropeOnly derive(new_indicator = case(indicator=='confirmed cases', 'cases', 'deaths')) ~> NewIndicatorColumn",
 				"PivotTheIndicatedCounts, SourceCountryLookup lookup(country_code == country_code_3_digit,",
 				"     multiple: false,",
@@ -122,7 +123,8 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     saveOrder: 1) ~> CasesDeathsSink"
+				"     saveOrder: 1,",
+				"     partitionBy('roundRobin', 4)) ~> CasesDeathsSink"
 			]
 		}
 	}
