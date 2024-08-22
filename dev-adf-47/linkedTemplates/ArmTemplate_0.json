@@ -330,7 +330,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_curated_cases_deaths')]",
+			"name": "[concat(parameters('factoryName'), '/ds_curated_txt')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -346,7 +346,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "ecdc/cases_deaths",
 						"fileSystem": "curated"
 					},
 					"columnDelimiter": ",",
