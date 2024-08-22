@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "pl_hdinsight_test",
 	"properties": {
 		"activities": [
 			{
@@ -15,7 +15,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": ""
+					"scriptPath": "scripts/covid_transform_testing.hql",
+					"scriptLinkedService": {
+						"referenceName": "ls_adls_devaccount47",
+						"type": "LinkedServiceReference"
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "linkedService1",
