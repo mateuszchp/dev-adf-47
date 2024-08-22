@@ -100,9 +100,7 @@
 				"          cases_count,",
 				"          source,",
 				"          reported_date,",
-				"          country = SourceCountryLookup@country,",
-				"          continent,",
-				"          population = SourceCountryLookup@population",
+				"          deaths_count = cases_count",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns"
