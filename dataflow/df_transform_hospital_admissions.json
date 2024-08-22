@@ -119,8 +119,8 @@
 				"SourceDimDate aggregate(groupBy(ecdc_year_week = toString(year) + '-W' + lpad(toString(week_of_year), 2, '0')),",
 				"     week_start_date = min(date),",
 				"          week_end_date = max(date)) ~> AggDimDate",
-				"SplitDailyWeekly@WeeklyData, AggDimDate join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"SplitDailyWeekly@WeeklyData, AggDimDate join(reported_year_week == ecdc_year_week,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinWithDate"
