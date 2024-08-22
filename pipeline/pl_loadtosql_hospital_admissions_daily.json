@@ -1,9 +1,9 @@
 {
-	"name": "pl_loadtosql_cases_deaths",
+	"name": "pl_loadtosql_hospital_admissions_daily",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Cases and Deaths",
+				"name": "Copy Hospital Admissions",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -19,9 +19,9 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
-							"maxConcurrentConnections": 4,
-							"recursive": true,
-							"wildcardFolderPath": "ecdc/cases_deaths",
+							"maxConcurrentConnections": 2,
+							"recursive": false,
+							"wildcardFolderPath": "ecdc/hospital_admissions/daily",
 							"wildcardFileName": "*.csv",
 							"enablePartitionDiscovery": false
 						},
@@ -31,7 +31,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "TRUNCATE TABLE covid_reporting.cases_and_deaths",
+						"preCopyScript": "TRUNCATE TABLE covid_reporting.hospital_admissions_daily",
 						"maxConcurrentConnections": 4,
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
@@ -91,30 +91,6 @@
 							},
 							{
 								"source": {
-									"name": "cases_count",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "cases_count",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "deaths_count",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "deaths_count",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
 									"name": "reported_date",
 									"type": "String",
 									"physicalType": "String"
@@ -123,6 +99,30 @@
 									"name": "reported_date",
 									"type": "DateTime",
 									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "hospital_occupancy_count",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "hospital_occupancy_count",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "icu_occupancy_count",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "icu_occupancy_count",
+									"type": "Int64",
+									"physicalType": "bigint"
 								}
 							},
 							{
@@ -157,7 +157,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"p_schema": "covid_reporting",
-							"p_table": "cases_and_deaths"
+							"p_table": "hospital_admissions_daily"
 						}
 					}
 				]

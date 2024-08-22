@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_curated_cases_deaths",
+						"referenceName": "ds_curated_txt",
 						"type": "DatasetReference"
 					},
 					"name": "CasesDeathsSink"
