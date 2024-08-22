@@ -5335,6 +5335,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "country_lookup.csv",
+						"folderPath": "dim_country",
 						"fileSystem": "lookups"
 					},
 					"columnDelimiter": ",",
@@ -6178,7 +6179,7 @@
 						"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 						"SelectRelevantColumns split(startsWith(indicator, 'Daily'),",
 						"     disjoint: false) ~> SplitDailyWeekly@(DailyData, WeeklyData)",
-						"SourceDimDate aggregate(groupBy(ecdc_year_week = toString(year) + '-W' + lpad(toString(week_of_year), 2, '0')),",
+						"SourceDimDate aggregate(groupBy(ecdc_year_week = toString(year)+'-W'+lpad(toString(week_of_year),2,'0')),",
 						"     week_start_date = min(date),",
 						"          week_end_date = max(date)) ~> AggDimDate",
 						"SplitDailyWeekly@WeeklyData, AggDimDate join(reported_year_week == ecdc_year_week,",
@@ -6343,6 +6344,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "dim_date.csv",
+						"folderPath": "dim_date",
 						"fileSystem": "lookups"
 					},
 					"columnDelimiter": ",",
