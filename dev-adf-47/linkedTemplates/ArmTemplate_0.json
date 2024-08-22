@@ -293,6 +293,41 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_ecdc_file_list')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This is the metadata config file pointer. So that pipelines relying on current ECDC sources know what they are.",
+				"linkedServiceName": {
+					"referenceName": "ls_ablob_blobaccount47",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Covid"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ecdc_file_list.json",
+						"container": "configs"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"p_filename": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_ablob_blobaccount47')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_http_ecdc_github_csv_generic')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -447,41 +482,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ln_dev_akv_47')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_ecdc_file_list')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This is the metadata config file pointer. So that pipelines relying on current ECDC sources know what they are.",
-				"linkedServiceName": {
-					"referenceName": "ls_ablob_blobaccount47",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Covid"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "ecdc_file_list.json",
-						"container": "configs"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"p_filename": {
-							"type": "string"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_ablob_blobaccount47')]"
 			]
 		},
 		{
