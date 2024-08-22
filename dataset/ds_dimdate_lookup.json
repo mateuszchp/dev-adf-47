@@ -5,6 +5,9 @@
 			"referenceName": "ls_adls_devaccount47",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Covid"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
