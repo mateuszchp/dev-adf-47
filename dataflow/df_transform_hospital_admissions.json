@@ -60,6 +60,9 @@
 				},
 				{
 					"name": "SortWeekly"
+				},
+				{
+					"name": "SortDaily"
 				}
 			],
 			"scriptLines": [
@@ -188,7 +191,9 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectFromPivotDaily",
 				"SelectFromPivotWeekly sort(desc(reported_year_week, true),",
-				"     asc(country, true)) ~> SortWeekly"
+				"     asc(country, true)) ~> SortWeekly",
+				"SelectFromPivotDaily sort(desc(reported_date, true),",
+				"     asc(country, true)) ~> SortDaily"
 			]
 		}
 	}
