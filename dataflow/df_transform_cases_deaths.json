@@ -83,7 +83,7 @@
 				"          population,",
 				"          source,",
 				"          reported_date),",
-				"     pivotBy(indicator),",
+				"     pivotBy(indicator, ['cases', 'deaths']),",
 				"     count = sum(daily_count),",
 				"     columnNaming: '$V_$N',",
 				"     lateral: true) ~> PivotTheIndicatedCounts",
@@ -94,18 +94,18 @@
 				"     broadcast: 'auto')~> LookupCountry",
 				"LookupCountry select(mapColumn(",
 				"          country = PivotTheIndicatedCounts@country,",
-				"          country_code,",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
 				"          population = PivotTheIndicatedCounts@population,",
+				"          cases_count,",
 				"          source,",
 				"          reported_date,",
 				"          country = SourceCountryLookup@country,",
-				"          country_code_2_digit,",
-				"          country_code_3_digit,",
 				"          continent,",
 				"          population = SourceCountryLookup@population",
 				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> SelectRelevantColumns"
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns"
 			]
 		}
 	}
