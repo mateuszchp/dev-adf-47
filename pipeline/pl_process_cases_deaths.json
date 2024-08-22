@@ -1,5 +1,5 @@
 {
-	"name": "pl_execute_df_transform_cases_deaths",
+	"name": "pl_process_cases_deaths",
 	"properties": {
 		"activities": [
 			{
