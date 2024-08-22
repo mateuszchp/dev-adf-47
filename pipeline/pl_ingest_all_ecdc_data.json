@@ -71,6 +71,10 @@
 									"p_filename": {
 										"value": "@item().p_filename",
 										"type": "Expression"
+									},
+									"p_sourcename": {
+										"value": "@item().p_sourcename",
+										"type": "Expression"
 									}
 								}
 							}
