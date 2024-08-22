@@ -127,12 +127,6 @@
 						},
 						"secretName": "dev-etl-sp-secret"
 					},
-					"additionalLinkedServiceNames": [
-						{
-							"referenceName": "ls_ablob_blobaccount47",
-							"type": "LinkedServiceReference"
-						}
-					],
 					"linkedServiceName": {
 						"referenceName": "ls_adfs_hdi",
 						"type": "LinkedServiceReference"
