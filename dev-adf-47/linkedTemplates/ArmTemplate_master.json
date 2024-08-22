@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-adf-47"
 		},
-		"ls_adfs_hdi_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_adfs_hdi'"
-		},
 		"ln_dev_akv_47_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://dev-akv-47.vault.azure.net/"
@@ -85,9 +81,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"ls_adfs_hdi_connectionString": {
-						"value": "[parameters('ls_adfs_hdi_connectionString')]"
 					},
 					"ln_dev_akv_47_properties_typeProperties_baseUrl": {
 						"value": "[parameters('ln_dev_akv_47_properties_typeProperties_baseUrl')]"
