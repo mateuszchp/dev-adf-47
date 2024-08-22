@@ -41,7 +41,7 @@
 					"name": "SplitDailyWeekly"
 				},
 				{
-					"name": "AddECDCYearWeek"
+					"name": "AggDimDate"
 				}
 			],
 			"scriptLines": [
@@ -113,7 +113,9 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 				"SelectRelevantColumns split(startsWith(indicator, 'Daily'),",
 				"     disjoint: false) ~> SplitDailyWeekly@(DailyData, WeeklyData)",
-				"SourceDimDate derive(ecdc_year_wek = toString(year) + '-W' + lpad(toString(week_of_year), 2, '0')) ~> AddECDCYearWeek"
+				"SourceDimDate aggregate(groupBy(ecdc_year_week = toString(year) + '-W' + lpad(toString(week_of_year), 2, '0')),",
+				"     week_start_date = min(date),",
+				"          week_end_date = max(date)) ~> AggDimDate"
 			]
 		}
 	}
