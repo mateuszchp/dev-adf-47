@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Covid"
+			"name": "Covid/lookups and configs"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
