@@ -11,24 +11,39 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_ingest_population_data",
+						"type": "PipelineReference"
+					},
 					"waitOnCompletion": true
 				}
 			},
 			{
-				"name": "Execute Pipeline1_copy1",
+				"name": "process_population",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "ingest_population_data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_process_population",
+						"type": "PipelineReference"
+					},
 					"waitOnCompletion": true
 				}
 			}
 		],
 		"folder": {
-			"name": "Covid"
+			"name": "Covid/_orchestrate"
 		},
 		"annotations": []
 	}
