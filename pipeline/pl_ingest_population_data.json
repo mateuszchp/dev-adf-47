@@ -257,7 +257,7 @@
 		],
 		"concurrency": 1,
 		"folder": {
-			"name": "Covid"
+			"name": "Covid/extract"
 		},
 		"annotations": []
 	}
