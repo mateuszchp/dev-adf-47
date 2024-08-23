@@ -54,7 +54,7 @@
 					"batchCount": 32,
 					"activities": [
 						{
-							"name": "ingest_ecdc_data",
+							"name": "ingest_ecdc_github_data",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"policy": {
