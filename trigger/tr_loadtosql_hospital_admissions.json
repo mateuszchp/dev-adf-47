@@ -3,6 +3,12 @@
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "pl_loadtosql_hospital_admissions_daily",
+				"type": "PipelineReference"
+			}
+		},
 		"type": "TumblingWindowTrigger",
 		"typeProperties": {
 			"frequency": "Hour",
