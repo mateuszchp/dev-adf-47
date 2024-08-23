@@ -22,18 +22,6 @@
 		"ls_http_ecdc_github_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/cloudboxacademy/covid19/main/ecdc_data/"
-		},
-		"ln_devaccount47_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://devaccount47.dfs.core.windows.net/"
-		},
-		"ln_devaccount47_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "de5bd167-c2de-4467-adbe-5c907f146c74"
-		},
-		"ln_devaccount47_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "88c95259-7e7b-4f70-a2e4-d0d0a826e744"
 		}
 	},
 	"variables": {
@@ -286,7 +274,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/lookups and configs"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -330,7 +318,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_curated_txt')]",
+			"name": "[concat(parameters('factoryName'), '/ds_curated_daily_hospital_admissions')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -339,13 +327,14 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/curated"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"folderPath": "ecdc/hospital_admissions/daily",
 						"fileSystem": "curated"
 					},
 					"columnDelimiter": ",",
@@ -360,7 +349,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_curated_daily_hospital_admissions')]",
+			"name": "[concat(parameters('factoryName'), '/ds_curated_testing')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -369,14 +358,82 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/curated"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "ecdc/hospital_admissions/daily",
+						"folderPath": "ecdc/testing",
+						"fileSystem": "curated"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_devaccount47')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_curated_txt')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_devaccount47",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Covid/curated"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
 						"fileSystem": "curated"
 					},
 					"columnDelimiter": ",",
@@ -400,7 +457,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/curated"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -431,7 +488,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/lookups and configs"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -513,7 +570,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/lookups and configs"
 				},
 				"annotations": [],
 				"type": "Json",
@@ -585,7 +642,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/raw"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -617,7 +674,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/raw"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -649,7 +706,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/raw"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -718,7 +775,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Covid"
+					"name": "Covid/raw"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -767,32 +824,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_adls_devaccount47')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ln_devaccount47')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('ln_devaccount47_properties_typeProperties_url')]",
-					"tenant": "[parameters('ln_devaccount47_properties_typeProperties_tenant')]",
-					"servicePrincipalId": "[parameters('ln_devaccount47_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalCredentialType": "ServicePrincipalKey",
-					"servicePrincipalCredential": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "ln_dev_akv_47",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "dev-etl-sp-secret"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ln_dev_akv_47')]"
 			]
 		}
 	]
