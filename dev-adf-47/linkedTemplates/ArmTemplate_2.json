@@ -17,6 +17,632 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_6_incremental')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Incremental load using watermark table.\nAgain job name was hardcoded because at the moment of creation there is no parent orchestrator pipeline.",
+				"activities": [
+					{
+						"name": "extract_from_sqldb",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "get_task_parameters",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(activity('get_task_parameters').output.firstRow.src_sql, ' WHERE ModifiedDate > ''',activity('get_last_run_date').output.firstRow.last_run_date, '''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_generic_azure_sqldb",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_generic_adls_text_file",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_foldername": {
+										"value": "@activity('get_task_parameters').output.firstRow.tgt_folder",
+										"type": "Expression"
+									},
+									"p_filename": {
+										"value": "@activity('get_task_parameters').output.firstRow.tgt_filename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "get_task_parameters",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "get_last_run_date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[control].[sp_task_parameters]",
+								"storedProcedureParameters": {
+									"job": {
+										"type": "String",
+										"value": "load_customer"
+									},
+									"job_id": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										}
+									},
+									"task": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										}
+									},
+									"task_id": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										}
+									},
+									"task_sequence": {
+										"type": "Int32",
+										"value": "1"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_generic_azure_sqldb",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "log_start",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_job_task_log]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": "load_customer",
+									"type": "String"
+								},
+								"job_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"job_status": {
+									"value": null,
+									"type": "String"
+								},
+								"status_description": {
+									"value": "Started running: PL_extract_from_sqldb",
+									"type": "String"
+								},
+								"task": {
+									"value": "PL_extract_from_sqldb",
+									"type": "String"
+								},
+								"task_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_sequence": {
+									"value": "1",
+									"type": "Int32"
+								},
+								"task_status": {
+									"value": "Running",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "log_success",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "update_last_run_date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_job_task_log]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": "load_customer",
+									"type": "String"
+								},
+								"job_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"job_status": {
+									"value": null,
+									"type": "String"
+								},
+								"status_description": {
+									"value": "Succeeded running: PL_extract_from_sqldb",
+									"type": "String"
+								},
+								"task": {
+									"value": "PL_extract_from_sqldb",
+									"type": "String"
+								},
+								"task_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_sequence": {
+									"value": "1",
+									"type": "Int32"
+								},
+								"task_status": {
+									"value": "Success",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "log_failure",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "update_control_table_failure",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_job_task_log]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": "load_customer",
+									"type": "String"
+								},
+								"job_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"job_status": {
+									"value": null,
+									"type": "String"
+								},
+								"status_description": {
+									"value": "Failed running: PL_extract_from_sqldb",
+									"type": "String"
+								},
+								"task": {
+									"value": "PL_extract_from_sqldb",
+									"type": "String"
+								},
+								"task_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_sequence": {
+									"value": "1",
+									"type": "Int32"
+								},
+								"task_status": {
+									"value": "Failure",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "update_control_table",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "log_start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_update_job_control]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"job_id": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_status": {
+									"value": "RUNNING",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "update_control_table_success",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "extract_from_sqldb",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_update_job_control]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"job_id": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_status": {
+									"value": "SUCCESS",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "update_control_table_failure",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "extract_from_sqldb",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_update_job_control]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"job_id": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"task_status": {
+									"value": "FAILURE",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "get_last_run_date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "update_control_table",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[control].[sp_get_last_run_date]",
+								"storedProcedureParameters": {
+									"job": {
+										"type": "String",
+										"value": "load_customer"
+									},
+									"task": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_generic_azure_sqldb",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "update_last_run_date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "update_control_table_success",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[control].[sp_update_last_run_date]",
+							"storedProcedureParameters": {
+								"job": {
+									"value": "load_customer",
+									"type": "String"
+								},
+								"last_run_date": {
+									"value": {
+										"value": "@pipeline().TriggerTime",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"task": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ln_sqldb",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "_FRAMEWORK/Buildup"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_extract_from_sqldb_mySPexample')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",

@@ -6084,6 +6084,67 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_curated_cases_deaths')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_devaccount47",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "ecdc/cases_deaths",
+						"fileSystem": "curated"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "country",
+						"type": "String"
+					},
+					{
+						"name": "country_code_2_digit",
+						"type": "String"
+					},
+					{
+						"name": "country_code_3_digit",
+						"type": "String"
+					},
+					{
+						"name": "population",
+						"type": "String"
+					},
+					{
+						"name": "cases_count",
+						"type": "String"
+					},
+					{
+						"name": "deaths_count",
+						"type": "String"
+					},
+					{
+						"name": "source",
+						"type": "String"
+					},
+					{
+						"name": "reported_date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_devaccount47')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_curated_daily_hospital_admissions')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -6863,227 +6924,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tr_ingest_ecdc_data')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pl_ingest_all_ecdc_data",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 24,
-					"startTime": "2024-08-22T00:00:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": []
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_ingest_all_ecdc_data')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_loadtosql_cases_deaths')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pl_loadtosql_cases_deaths",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 24,
-					"startTime": "2024-08-22T00:00:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": [
-						{
-							"type": "TumblingWindowTriggerDependencyReference",
-							"referenceTrigger": {
-								"referenceName": "tr_process_cases_deaths",
-								"type": "TriggerReference"
-							}
-						}
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_loadtosql_cases_deaths')]",
-				"[concat(variables('factoryId'), '/triggers/tr_process_cases_deaths')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_loadtosql_hospital_admissions')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pl_loadtosql_hospital_admissions_daily",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 24,
-					"startTime": "2024-08-22T00:00:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": [
-						{
-							"type": "TumblingWindowTriggerDependencyReference",
-							"referenceTrigger": {
-								"referenceName": "tr_process_hospital_admissions",
-								"type": "TriggerReference"
-							}
-						}
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_loadtosql_hospital_admissions_daily')]",
-				"[concat(variables('factoryId'), '/triggers/tr_process_hospital_admissions')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_population_data')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_orchestrate_population_data",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv.gz",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('tr_population_data_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_orchestrate_population_data')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_process_cases_deaths')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pl_process_cases_deaths",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 24,
-					"startTime": "2024-08-22T00:00:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": [
-						{
-							"type": "TumblingWindowTriggerDependencyReference",
-							"referenceTrigger": {
-								"referenceName": "tr_ingest_ecdc_data",
-								"type": "TriggerReference"
-							}
-						}
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_process_cases_deaths')]",
-				"[concat(variables('factoryId'), '/triggers/tr_ingest_ecdc_data')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_process_hospital_admissions')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pl_process_hospital_admissions",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 24,
-					"startTime": "2024-08-22T00:00:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": [
-						{
-							"type": "TumblingWindowTriggerDependencyReference",
-							"referenceTrigger": {
-								"referenceName": "tr_ingest_ecdc_data",
-								"type": "TriggerReference"
-							}
-						}
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_process_hospital_admissions')]",
-				"[concat(variables('factoryId'), '/triggers/tr_ingest_ecdc_data')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_transform_cases_deaths')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -7109,7 +6949,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_curated_txt",
+								"referenceName": "ds_curated_cases_deaths",
 								"type": "DatasetReference"
 							},
 							"name": "CasesDeathsSink"
@@ -7202,6 +7042,16 @@
 						"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
 						"SelectRelevantColumns sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     input(",
+						"          country as string,",
+						"          country_code_2_digit as string,",
+						"          country_code_3_digit as string,",
+						"          population as string,",
+						"          cases_count as string,",
+						"          deaths_count as string,",
+						"          source as string,",
+						"          reported_date as string",
+						"     ),",
 						"     truncate: true,",
 						"     umask: 0220,",
 						"     preCommands: [],",
@@ -7216,7 +7066,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_raw_cases_and_deaths')]",
 				"[concat(variables('factoryId'), '/datasets/ds_country_lookup')]",
-				"[concat(variables('factoryId'), '/datasets/ds_curated_txt')]"
+				"[concat(variables('factoryId'), '/datasets/ds_curated_cases_deaths')]"
 			]
 		},
 		{
@@ -7456,6 +7306,227 @@
 				"[concat(variables('factoryId'), '/datasets/ds_dimdate_lookup')]",
 				"[concat(variables('factoryId'), '/datasets/ds_curated_daily_hospital_admissions')]",
 				"[concat(variables('factoryId'), '/datasets/ds_curated_weekly_hospital_admissions')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_ingest_ecdc_data')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pl_ingest_all_ecdc_data",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Hour",
+					"interval": 24,
+					"startTime": "2024-08-22T00:00:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_ingest_all_ecdc_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_loadtosql_cases_deaths')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pl_loadtosql_cases_deaths",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Hour",
+					"interval": 24,
+					"startTime": "2024-08-22T00:00:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": [
+						{
+							"type": "TumblingWindowTriggerDependencyReference",
+							"referenceTrigger": {
+								"referenceName": "tr_process_cases_deaths",
+								"type": "TriggerReference"
+							}
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_loadtosql_cases_deaths')]",
+				"[concat(variables('factoryId'), '/triggers/tr_process_cases_deaths')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_loadtosql_hospital_admissions')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pl_loadtosql_hospital_admissions_daily",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Hour",
+					"interval": 24,
+					"startTime": "2024-08-22T00:00:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": [
+						{
+							"type": "TumblingWindowTriggerDependencyReference",
+							"referenceTrigger": {
+								"referenceName": "tr_process_hospital_admissions",
+								"type": "TriggerReference"
+							}
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_loadtosql_hospital_admissions_daily')]",
+				"[concat(variables('factoryId'), '/triggers/tr_process_hospital_admissions')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_population_data')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_orchestrate_population_data",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv.gz",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('tr_population_data_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_orchestrate_population_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_process_cases_deaths')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pl_process_cases_deaths",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Hour",
+					"interval": 24,
+					"startTime": "2024-08-22T00:00:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": [
+						{
+							"type": "TumblingWindowTriggerDependencyReference",
+							"referenceTrigger": {
+								"referenceName": "tr_ingest_ecdc_data",
+								"type": "TriggerReference"
+							}
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_process_cases_deaths')]",
+				"[concat(variables('factoryId'), '/triggers/tr_ingest_ecdc_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_process_hospital_admissions')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pl_process_hospital_admissions",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Hour",
+					"interval": 24,
+					"startTime": "2024-08-22T00:00:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": [
+						{
+							"type": "TumblingWindowTriggerDependencyReference",
+							"referenceTrigger": {
+								"referenceName": "tr_ingest_ecdc_data",
+								"type": "TriggerReference"
+							}
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_process_hospital_admissions')]",
+				"[concat(variables('factoryId'), '/triggers/tr_ingest_ecdc_data')]"
 			]
 		}
 	]
