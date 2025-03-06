@@ -1,0 +1,22 @@
+{
+	"name": "Lakehouse1",
+	"properties": {
+		"annotations": [],
+		"type": "Lakehouse",
+		"typeProperties": {
+			"workspaceId": "5fc83d0f-f33c-405a-8c8c-7eb5eb50430e",
+			"artifactId": "596a9d91-2d3e-451a-a837-44fbb7ce38ea",
+			"tenant": "de5bd167-c2de-4467-adbe-5c907f146c74",
+			"servicePrincipalId": "366c333e-8e00-4267-912e-9850d4e96954",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ln_lab_akv_accesspolicy47",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "workspace-app-client-secret"
+			}
+		}
+	}
+}
